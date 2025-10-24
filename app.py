@@ -412,38 +412,60 @@ def main():
                     st.error("PDF okunamadı veya metin içermiyor")
     
     # Tab 2: Flashcard Oyunu
-   with tab2:
-    st.markdown("### 🎴 Kelime Kartları")
-    if 'vocabulary' in st.session_state and st.session_state.vocabulary:
-        if 'flashcards' not in st.session_state:
-            st.session_state.flashcards = GameGenerator.create_flashcards(st.session_state.vocabulary)
-            st.session_state.current_card = 0
-            st.session_state.flipped = False
+    with tab2:
+        st.markdown("### 🎴 Kelime Kartları")
         
-        card = st.session_state.flashcards[st.session_state.current_card]
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.markdown(f'<div class="game-card">', unsafe_allow_html=True)
-            if not st.session_state.flipped:
-                st.markdown(f"<h2 style='text-align:center;color:#00FFFF'>{card['english']}</h2>", unsafe_allow_html=True)
-                st.markdown("<p style='text-align:center;color:#666'>Türkçe anlamı için tıkla</p>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<h2 style='text-align:center;color:#FF00FF'>{card['turkish']}</h2>", unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Butonlar
-        if col1.button("🔄 Çevir", key="flip"):
-            st.session_state.flipped = not st.session_state.flipped
-        if col2.button("✅ Öğrendim", key="learn"):
-            st.session_state.learned_words.add(card['english'])
-        if col3.button("➡️ Sonraki", key="next"):
-            st.session_state.current_card = (st.session_state.current_card + 1) % len(st.session_state.flashcards)
-            st.session_state.flipped = False
-        
-        st.write(f"Kart {st.session_state.current_card + 1}/{len(st.session_state.flashcards)}")
-        st.progress((st.session_state.current_card + 1)/len(st.session_state.flashcards))
-    else:
-        st.info("📚 Önce PDF yükleyip kelimeleri çıkarın")
+        if 'vocabulary' in st.session_state and st.session_state.vocabulary:
+            if 'flashcards' not in st.session_state:
+                st.session_state.flashcards = GameGenerator.create_flashcards(st.session_state.vocabulary)
+                st.session_state.current_card = 0
+                st.session_state.flipped = False
+            
+            if st.session_state.flashcards:
+                card = st.session_state.flashcards[st.session_state.current_card]
+                
+                col1, col2, col3 = st.columns([1, 2, 1])
+                
+                with col2:
+                    st.markdown('<div class="game-card">', unsafe_allow_html=True)
+                    
+                    if not st.session_state.flipped:
+                        st.markdown(f"<h2 style='text-align: center; color: #00FFFF;'>{card['english']}</h2>", 
+                                  unsafe_allow_html=True)
+                        st.markdown("<p style='text-align: center; color: #666;'>Türkçe anlamı için tıkla</p>", 
+                                  unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<h2 style='text-align: center; color: #FF00FF;'>{card['turkish']}</h2>", 
+                                  unsafe_allow_html=True)
+                        st.markdown(f"<p style='text-align: center; color: #00FFFF;'>{card['english']}</p>", 
+                                  unsafe_allow_html=True)
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    # Kontrol butonları
+                    col_btn1, col_btn2, col_btn3 = st.columns(3)
+                    
+                    with col_btn1:
+                        if st.button("🔄 Çevir", use_container_width=True):
+                            st.session_state.flipped = not st.session_state.flipped
+                            st.rerun()
+                    
+                    with col_btn2:
+                        if st.button("✅ Öğrendim", use_container_width=True):
+                            st.session_state.learned_words.add(card['english'])
+                            st.success(f"'{card['english']}' kelimesi öğrenildi!")
+                    
+                    with col_btn3:
+                        if st.button("➡️ Sonraki", use_container_width=True):
+                            st.session_state.current_card = (st.session_state.current_card + 1) % len(st.session_state.flashcards)
+                            st.session_state.flipped = False
+                            st.rerun()
+                
+                # İlerleme
+                st.write(f"Kart {st.session_state.current_card + 1} / {len(st.session_state.flashcards)}")
+                st.progress((st.session_state.current_card + 1) / len(st.session_state.flashcards))
+        else:
+            st.info("📚 Önce PDF yükleyip kelimeleri çıkarın")
     
     # Tab 3: Boşluk Doldurma
     with tab3:
@@ -498,49 +520,68 @@ def main():
     
     # Tab 4: Eşleştirme Oyunu
     with tab4:
-    st.markdown("### 🎯 Kelime Eşleştirme")
-    if 'vocabulary' in st.session_state and st.session_state.vocabulary:
-        if 'matching_game' not in st.session_state:
-            st.session_state.matching_game = GameGenerator.create_matching_game(st.session_state.vocabulary)
-            st.session_state.selected_english = None
-            st.session_state.selected_turkish = None
+        st.markdown("### 🎯 Kelime Eşleştirme")
         
-        game = st.session_state.matching_game
-        st.markdown("#### İngilizce Kelimeler")
-        cols = st.columns(4)
-        for i, word in enumerate(game['english_words']):
-            with cols[i % 4]:
-                if word not in game['completed_pairs']:
-                    if st.button(word, key=f"eng_{word}"):
-                        st.session_state.selected_english = word
-        
-        st.markdown("#### Türkçe Anlamlar")
-        cols = st.columns(4)
-        for i, meaning in enumerate(game['turkish_meanings']):
-            with cols[i % 4]:
-                if meaning not in game['user_selections'].values():
-                    if st.button(meaning, key=f"tr_{meaning}"):
-                        st.session_state.selected_turkish = meaning
-        
-        # Kontrol
-        if st.session_state.selected_english and st.session_state.selected_turkish:
-            correct_meaning = game['correct_pairs'][st.session_state.selected_english]
-            if st.session_state.selected_turkish == correct_meaning:
-                st.success(f"🎉 Doğru! {st.session_state.selected_english} = {st.session_state.selected_turkish}")
-                game['completed_pairs'].add(st.session_state.selected_english)
-                game['user_selections'][st.session_state.selected_english] = st.session_state.selected_turkish
-                st.session_state.learned_words.add(st.session_state.selected_english)
-            else:
-                st.error("❌ Yanlış eşleştirme!")
-            st.session_state.selected_english = None
-            st.session_state.selected_turkish = None
-        
-        progress = len(game['completed_pairs']) / len(game['english_words'])
-        st.write(f"Tamamlanan: {len(game['completed_pairs'])}/{len(game['english_words'])}")
-        st.progress(progress)
-        if progress == 1:
-            st.balloons()
-            st.success("🎊 Tüm eşleştirmeleri tamamladınız!")
+        if 'vocabulary' in st.session_state and st.session_state.vocabulary:
+            if 'matching_game' not in st.session_state:
+                st.session_state.matching_game = GameGenerator.create_matching_game(st.session_state.vocabulary)
+                st.session_state.selected_english = None
+                st.session_state.selected_turkish = None
+            
+            game = st.session_state.matching_game
+            
+            # İngilizce kelimeler
+            st.markdown("#### İngilizce Kelimeler")
+            cols = st.columns(4)
+            for i, word in enumerate(game['english_words']):
+                with cols[i % 4]:
+                    if word not in game['completed_pairs']:
+                        if st.button(word, key=f"eng_{word}", use_container_width=True,
+                                   type="primary" if st.session_state.selected_english == word else "secondary"):
+                            st.session_state.selected_english = word
+            
+            # Türkçe anlamlar
+            st.markdown("#### Türkçe Anlamlar")
+            cols = st.columns(4)
+            for i, meaning in enumerate(game['turkish_meanings']):
+                with cols[i % 4]:
+                    if meaning not in game['user_selections'].values():
+                        if st.button(meaning, key=f"tr_{meaning}", use_container_width=True,
+                                   type="primary" if st.session_state.selected_turkish == meaning else "secondary"):
+                            st.session_state.selected_turkish = meaning
+            
+            # Eşleştirme kontrolü
+            if st.session_state.selected_english and st.session_state.selected_turkish:
+                correct_meaning = game['correct_pairs'].get(st.session_state.selected_english)
+                
+                if st.session_state.selected_turkish == correct_meaning:
+                    st.success(f"🎉 Doğru! {st.session_state.selected_english} = {st.session_state.selected_turkish}")
+                    game['completed_pairs'].add(st.session_state.selected_english)
+                    game['user_selections'][st.session_state.selected_english] = st.session_state.selected_turkish
+                    st.session_state.learned_words.add(st.session_state.selected_english)
+                else:
+                    st.error("❌ Yanlış eşleştirme!")
+                
+                st.session_state.selected_english = None
+                st.session_state.selected_turkish = None
+                st.rerun()
+            
+            # İlerleme
+            progress = len(game['completed_pairs']) / len(game['english_words'])
+            st.write(f"Tamamlanan: {len(game['completed_pairs'])}/{len(game['english_words'])}")
+            st.progress(progress)
+            
+            if progress == 1:
+                st.balloons()
+                st.success("🎊 Tüm eşleştirmeleri tamamladınız!")
+                
+                if st.button("🔄 Yeni Oyun", use_container_width=True):
+                    st.session_state.matching_game = GameGenerator.create_matching_game(st.session_state.vocabulary)
+                    st.session_state.selected_english = None
+                    st.session_state.selected_turkish = None
+                    st.rerun()
+        else:
+            st.info("📚 Önce PDF yükleyip kelimeleri çıkarın")
     
     # Tab 5: Hızlı Test
     with tab5:
