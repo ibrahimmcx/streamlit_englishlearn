@@ -22,3 +22,4 @@ Requests – API communication
 Gemini API – interactive language learning features
 
 💡 I just started this project, learned each step along the way, and gained a lot from the coding process.
+ez te hezdıkım
