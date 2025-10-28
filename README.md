@@ -1,25 +1,35 @@
-My first Streamlit experiment:
-I developed my own Streamlit application to make learning English more interactive and fun: a vocabulary memorization and quiz platform. 🎯
+# 🌟 İlk Streamlit Deneyimim
 
-What I did in this project:
+Bu proje, İngilizce öğrenmeyi daha **etkileşimli** ve **eğlenceli** hale getirmek için geliştirdiğim kendi **Streamlit uygulamamdır**. 🎯  
+Kullanıcıların kelime ezberlemesini ve quizlerle bilgisini pekiştirmesini sağlayan bir platform geliştirdim.
 
-User login system and database management (using SQLite)
+---
 
-Flashcards and quiz system
+## 🚀 Projede Yaptıklarım
 
-Personalized progress tracking for users
+✅ Kullanıcı girişi sistemi ve veritabanı yönetimi (**SQLite**)  
+✅ Flashcard (kart sistemi) ve quiz modülü  
+✅ Kullanıcıya özel ilerleme takibi  
+✅ **Streamlit** ile web arayüzü oluşturma  
+✅ **Gemini API** entegrasyonu ile etkileşimli dil öğrenme özellikleri  
 
-Built the web application with Streamlit and powered it with Gemini API integration
+---
 
-Libraries I used:
+## 🧰 Kullanılan Kütüphaneler
 
-Streamlit – fast and interactive web interfaces
+- **Streamlit** – Hızlı ve etkileşimli web arayüzleri geliştirmek için  
+- **Pandas** – Veri yönetimi ve analizinde  
+- **Requests** – API bağlantılarını gerçekleştirmek için  
+- **Gemini API** – Akıllı dil öğrenme ve çeviri özellikleri için  
 
-Pandas – data management and analysis
+---
 
-Requests – API communication
+## 💡 Öğrendiklerim
 
-Gemini API – interactive language learning features
+Bu projeye sıfırdan başladım ve her adımı öğrenerek ilerledim.  
+Süreç boyunca hem **Streamlit**’i hem de **API entegrasyonu** mantığını derinlemesine öğrendim.  
+Kodlama sürecinden çok şey kazandım ve gelecekte bu platformu daha da geliştirmeyi planlıyorum. 🚀  
 
-💡 I just started this project, learned each step along the way, and gained a lot from the coding process.
+---
+
 
